@@ -61,7 +61,7 @@ Researchers can refer to 100 samples of NTUST-IW database (10 classes in ['Image
             <td rowspan=2>2</td>
             <td>Indoor</td>
             <td><img src="https://github.com/vantrungfit/lawnet/blob/main/Images/ntust_iw_s2_ia.png" alt="s2_ia" width = auto height = auto></td>
-            <td><img src="https://github.com/vantrungfit/lawnett/blob/main/Images/ntust_iw_s2_ib.png" alt="s2_ib" width = auto height = auto></td>
+            <td><img src="https://github.com/vantrungfit/lawnet/blob/main/Images/ntust_iw_s2_ib.png" alt="s2_ib" width = auto height = auto></td>
             <td><img src="https://github.com/vantrungfit/lawnet/blob/main/Images/ntust_iw_s2_ic.png" alt="s2_ic" width = auto height = auto></td>
         </tr>
         <tr>
