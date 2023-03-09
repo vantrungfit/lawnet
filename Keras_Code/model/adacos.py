@@ -25,7 +25,7 @@ class AdaCos(Layer):
                  regularizer=None,
                  **kwargs):
         
-        super(AdaCos, self).__init__(**kwargs)
+        super().__init__(**kwargs)
         self.n_classes = n_classes
         self.is_dynamic = is_dynamic
         self.initializer = initializer
@@ -47,7 +47,7 @@ class AdaCos(Layer):
         super(AdaCos, self).build(input_shape[0])
         
         self.W = self.add_weight(name='W',
-                                 shape=(input_shape[0][-1].value, self.n_classes),
+                                 shape=(input_shape[0][-1], self.n_classes),
                                  initializer=self.initializer,
                                  trainable=True,
                                  regularizer=self.regularizer)

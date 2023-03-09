@@ -8,8 +8,8 @@ class Net:
     
     def __init__(self, config):
         self.model_name = config.model_name
-        self.start_fine_tune_layer_id = config.start_fine_tune_layer_id
-        self.end_fine_tune_layer_id = config.end_fine_tune_layer_id
+        self.embedding_layer_id = config.embedding_layer_id
+        self.fine_tune_layer_id = config.fine_tune_layer_id
         self.embedding_dim = config.embedding_dim
         self.embedding_layer_name = config.embedding_layer_name
         self.dropout = config.dropout
@@ -62,7 +62,7 @@ class Net:
         M0 = self.net_blocks.conv_block(I, 32, 3, 2, activation=activation)
        
         M1 = self.net_blocks.inverted_residual_block(M0, c=c[0], ks=3, t=t[0], s=s[0], n=n[0], activation=activation)
-        M0 = self.net_blocks.separable_conv_block(M0, c[1], 3, s[1], activation=None)
+        M0 = self.net_blocks.separable_conv_block(M0, c[0], 3, s[0], activation=None)
         A1 = add([M0, M1])
         
         M2 = self.net_blocks.inverted_residual_block(A1, c=c[1], ks=3, t=t[1], s=s[1], n=n[1], activation=activation)
@@ -78,7 +78,7 @@ class Net:
         A4 = add([A3, M4])
         
         if(self.dropout>0):
-            x = Dropout(rate=self.dropout)(x)
+            A4 = Dropout(rate=self.dropout)(A4)
                 
         M = self.net_blocks.spp_block(A4, pool_list=[1, 2, 4], fc=self.embedding_dim)
         
@@ -270,25 +270,26 @@ class Net:
         
         self.softmax_model = Model(inputs=I, outputs=x, name=self.model_name) 
 
-    def build_adacos_model(self):
+    def build_adacos_model(self, dropout=0.0):
         
         label = Input(shape=(1,), name='label_input')
         softmax = self.softmax_model.outputs[0]
         n_classes = K.int_shape(softmax)[-1]
         inputs = self.softmax_model.inputs[0]
-        x = self.softmax_model.layers[self.end_fine_tune_layer_id].output
+        x = self.softmax_model.layers[self.embedding_layer_id].output
         
-        if(self.dropout>0):
+        if(dropout>0):
             x = Dropout(rate=dropout)(x)
                 
         x = Flatten(name=self.embedding_layer_name)(x)
             
-        break_point = len(self.softmax_model.layers) + self.start_fine_tune_layer_id
+        break_point = len(self.softmax_model.layers) + self.fine_tune_layer_id
         
         for layer in self.softmax_model.layers[:break_point]:
             layer.trainable=False
         
-        outputs = AdaCos(n_classes, initializer=self.net_blocks.kernel_initializer, regularizer=self.net_blocks.kernel_regularizer, name='adacos')([x, label])
+        outputs = AdaCos(n_classes, initializer=self.net_blocks.kernel_initializer, 
+                         regularizer=self.net_blocks.kernel_regularizer, name='adacos')([x, label])
         
         self.adacos_model = Model(inputs = (inputs, label), outputs = outputs, name=self.model_name)
 

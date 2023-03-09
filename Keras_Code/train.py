@@ -35,7 +35,7 @@ def get_optimizer(optimizer_name, lr):
     elif(optimizer_name == 'adam'):
         return Adam(lr=lr)
 
-def extract_genuines_impostors(distances, labels, sessions, class_size=10, sort=True):
+def extract_genuines_impostors(distances, labels, sessions, sort=True):
     # Get genuine matching and impostor matching scores
     num_features = distances.shape[0]
     genuines = []
@@ -100,6 +100,7 @@ def test(model, fold, n_sessions=1):
     
     fname = dataloader.test_name + '_fold' + str(fold)
     fpath = config.output_folder + fname
+    scores_path  = fpath + '_scores.txt'
     feature_path = fpath + ".hdf5"
     
     print("Evaluate fold %i on %s database:"%(fold, dataloader.test_name))
@@ -132,46 +133,11 @@ def test(model, fold, n_sessions=1):
             labels = np.array(h5f_data["labels"])
             sessions = np.array(h5f_data["sessions"])
             
-    # IDENTIFICATION
-    scores_path  = fpath + '_scores.txt'
-    norm_features = normalize(features, axis=0)
-    
-    print (LINE)
-    print ("Identification using Linear SVC.")
-    
-    clf = svm.LinearSVC(random_state=config.random_state, class_weight='balanced', max_iter=1000, dual=False)
-    scoring = ['accuracy']
-    n_samples = labels.shape[0]
-    n_classes = (labels[-1]-labels[0])+1
-    test_size = 0.5
-    splits = 5
-    
-    cv_generator = StratifiedShuffleSplit(n_splits=splits, test_size=test_size, random_state=config.random_state)
-                                          
-    i_scores = cross_validate(clf, norm_features, labels, 
-                              cv=cv_generator, scoring=scoring)
-    
-    # write identification scores to file
-    with open(scores_path, "w") as f:
-        dumped = json.dumps(i_scores, cls=NumpyEncoder)
-        json.dump(dumped, f)
-        
-    # get average scores   
-    for key in i_scores:
-        i_scores[key] = i_scores[key].mean()
-    accuracy = i_scores['test_accuracy']
-    
-    # write average identification scores to file
-    print(i_scores)
-        
-    with open(scores_path, "a+") as f:
-        dumped = json.dumps(i_scores, cls=NumpyEncoder)
-        json.dump(dumped, f)
-            
     # VERIFICATION
+    
     print ("Verification using pairwise cosine distance.")
     distances = pairwise_distances(features, Y=None, metric=config.distance_metric)
-    genuines, impostors = extract_genuines_impostors(distances, labels, sessions, dataloader.test_class_size, True)
+    genuines, impostors = extract_genuines_impostors(distances, labels, sessions, True)
     
     far = []
     frr = [] 
@@ -183,38 +149,24 @@ def test(model, fold, n_sessions=1):
     end = np.amax(impostors)+epsilon
     threshold_step = (end-start)/n_thresholds
     thresholds=np.arange(start, end, threshold_step)
-    best_frr_pos=0
-
+    
+    # calculate FAR and FRR
     n_genuines = len(genuines)
     n_impostors = len(impostors)
-    n_thresholds = len(thresholds)
-    
-    # for each threshold, calculate confusion matrix.
-    for k in range(n_thresholds):
 
-        t = thresholds[k]
+    far = np.searchsorted(impostors, thresholds, side='right') * 100 / n_impostors
+    frr = np.searchsorted(genuines, thresholds, side='right')*(-100) / n_genuines + 100.0
 
-        FP = np.searchsorted(impostors, t, side='right')
-        FN = n_genuines - np.searchsorted(genuines, t, side='right')
-
-        far_current = 100.0 * (float(FP) / float(n_impostors))
-        frr_current = 100.0 * (float(FN) / float(n_genuines))
-        far.append(far_current)
-        frr.append(frr_current)
-
-    # calculate the most optimal FAR and FRR values
-    f = np.abs(np.array(frr)-np.array(far))
-    k = np.argmin(f)
-
+    # calculate the most optimal FAR and FRR values => EER
+    k = np.argmin(np.abs(far-frr))
     eer = (far[k]+frr[k])/2
-    eer_threshold=thresholds[k]
 
     # write verification rate to file
     with open(scores_path, 'a+') as file:
-        file.write("\nThreshold: {:.3f}, FRR: {:.3f}, FAR: {:.3f}, EER: {:.3f}\n\n".format(eer_threshold,frr[k],far[k],eer))
+        file.write("\nThreshold: {:.3f}, FRR: {:.3f}, FAR: {:.3f}, EER: {:.3f}\n\n".format(thresholds[k],frr[k],far[k],eer))
 
     print('Verification results:')
-    print("Threshold: %.3f, FRR: %.3f, FAR: %.3f, EER: %.3f"%(eer_threshold, frr[k], far[k], eer))
+    print("Threshold: %.3f, FRR: %.3f, FAR: %.3f, EER: %.3f"%(thresholds[k], frr[k], far[k], eer))
     
     # Plot DET
     plot_DET(frr, far, linthresh=20, output_path=fpath)
@@ -222,7 +174,7 @@ def test(model, fold, n_sessions=1):
     # Plot matching distance distributions
     plot_MDD(genuines, impostors, output_path=fpath)
     
-    return accuracy, eer
+    return eer
 
 def train(
     retrain_softmax=True, 
@@ -230,10 +182,6 @@ def train(
     convert_to_tflite=True,
     n_sessions=1
 ):
-    best_acc = 0.0
-    best_acc_fold = 1
-    avg_acc = 0.0
-    
     best_eer = 100.0
     best_eer_fold = 1
     avg_eer = 0.0
@@ -276,7 +224,7 @@ def train(
             elif(config.model_name=='mobilefacenet'):
                 net.build_mobilefacenet_backbone(input_shape = dataloader.sample_shape)
                 
-            net.build_softmax_model(n_classes=dataloader.n_train_classes, add_embedding=True)
+            net.build_softmax_model(n_classes=dataloader.n_train_classes, add_embedding=add_embedding)
             optimizer = get_optimizer(config.warmup_optimizer, config.warmup_lr)
             net.softmax_model.compile(loss="sparse_categorical_crossentropy", optimizer=optimizer, metrics=['accuracy'])
             postfix = config.output_folder + 'softmax_fold' + str(fold)
@@ -345,32 +293,24 @@ def train(
                 convert_to_TFLite(net.adacos_model, tflite_file_path)
                 
         # Get identification rate (accuracy) and verification rate EER
-        acc, eer = test(net.adacos_model, fold, n_sessions=n_sessions)
+        eer = test(net.adacos_model, fold, n_sessions=n_sessions)
         
-        # update acc, eer
-        avg_acc += acc
+        # update eer
         avg_eer += eer
-
-        if(acc>best_acc):
-            best_acc=acc
-            best_acc_fold=fold
             
         if(eer<best_eer):
             best_eer=eer
             best_eer_fold=fold
 
-    # calculate average acc and eer
-    avg_acc /= config.n_folds
+    # calculate average eer
     avg_eer /= config.n_folds
 
     # write test scores to file
     scores_path = config.output_folder + dataloader.test_name + '_scores.txt'
     
     with open(scores_path, "w") as f:
-        file.write("Best accuracy fold: {:d}\nBest accuracy: {:.6f}\nAverage accuracy: {:.6f}\n\n".format(best_acc_fold, best_acc, avg_acc)) 
-        file.write("Best EER fold: {:d}\nBest EER: {:.6f}\nAverage EER: {:.6f}".format(best_eer_fold, best_eer, avg_eer))
-        
-    print("Best accuracy fold: %i\nBest accuracy: %.6f\nAverage accuracy: %.6f"%(best_acc_fold, best_acc, avg_acc))
+        f.write("Best EER fold: {:d}\nBest EER: {:.6f}\nAverage EER: {:.6f}".format(best_eer_fold, best_eer, avg_eer))
+    
     print("Best EER fold: %i\nBest EER: %.6f\nAverage EER: %.6f"%(best_fold, best_eer, avg_eer))
 
 if __name__ == '__main__':

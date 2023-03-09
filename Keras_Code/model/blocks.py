@@ -95,7 +95,7 @@ class NetBlock:
         if(dropout>0):
             x = Dropout(rate=dropout)(x)
     
-    return x
+        return x
     
     def conv_block(self, inputs, filters, kernel_size, strides, padding='same', norm='batch', activation='relu', dropout=0.0):
 
@@ -256,7 +256,7 @@ class NetBlock:
         residual = x
 
         x_h = MaxPooling2D(pool_size=(h, 1), strides=1)(x) + AveragePooling2D(pool_size=(h, 1), strides=1)(x)
-        x_w = MaxPooling2D(pool_size=(1, w), strides=1)(x) + (x)AveragePooling2D(pool_size=(1, w), strides=1)(x)
+        x_w = MaxPooling2D(pool_size=(1, w), strides=1)(x) + AveragePooling2D(pool_size=(1, w), strides=1)(x)
 
         x_w = Permute((2, 1, 3))(x_w)
         y = K.concatenate((x_h, x_w), axis=2)
