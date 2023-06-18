@@ -29,7 +29,7 @@ Finally, ten images were collected from each left and right wrist hand. The data
 
 ### Reference Samples
 
-Researchers can refer to 100 samples of NTUST-IW database (10 classes in ['Images/100_samples/'](https://github.com/vantrungfit/lawnet/blob/main/Images/100_samples) folder). Below are wrist samples and corresponding ROIs of four wrists (indoor and outdoor) in NTUST-IW database: (a)Wrist image, (b) Wrist ROI on the saturation channel, (c) Extracted ROI.
+Researchers can refer to 100 samples of NTUST-IW database (10 classes in ['Images/100_samples/'](https://github.com/vantrungfit/lawnet/blob/main/Images/100_samples) folder). Below are wrist samples and corresponding ROIs of four wrists (indoor and outdoor) in NTUST-IW database: (a)RGB, (b) Bounding box, (c) Extracted ROI.
 
 <table>
     <thead>
