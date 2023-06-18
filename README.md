@@ -1,4 +1,4 @@
-# LAWNet: A Lightweight Attention-based Deep Learning Model for Wrist Vein Verification in Smartphones Using RGB Images
+# LAWNet
 
 ## Introduction
 
@@ -6,9 +6,7 @@ This repository gives the implementation of our proposed Wrist ROI Extraction me
 
 ## Database
 
-The NTUST-IW contactless wrist vein database was made of 2120 RGB images captured by an iPhone 8+. A total of 106 volunteers from China, Taiwan, Vietnam, Thailand, Indonesia, and Mongolia aged from 17 to 63 joined the collection process. Five samples per session were captured for each subject wrist: 106 subjects × 2 wrists × 5 samples × 2 sessions = 2,120 images. These images with 640 × 480 resolution were stored in ".tiff" format.
-
-To increase the diversity of RGB wrist vein database, the samples in NTUST-IW were collected under uncontrol environment. In the first session, the images were captured indoor in our laboratory. In the second session, the wrist vein images were taken outdoor in our school campus. The time interval between two sessions is one week. Note that, LED flashlight of iPhone 8+ is turned on in the collection process.
+The NTUST-IW contactless wrist vein database was made of 2120 RGB images captured by an iPhone 8+ (indoor and outdoor).
 
 ### Collection Method
 
