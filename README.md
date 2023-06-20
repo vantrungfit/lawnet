@@ -29,7 +29,9 @@ Finally, ten images were collected from each left and right wrist hand. The data
 
 ### Reference Samples
 
-Researchers can refer to 100 samples of NTUST-IW database (10 classes in ['Images/100_samples/'](https://github.com/vantrungfit/lawnet/blob/main/Images/100_samples) folder). Below are wrist samples and corresponding ROIs of four wrists (indoor and outdoor) in NTUST-IW database: (a)RGB, (b) Bounding box, (c) Extracted ROI.
+Researchers can refer to 100 samples of NTUST-IW database (10 classes in ['Images/100_samples/'](https://github.com/vantrungfit/lawnet/blob/main/Images/100_samples) folder) and 30 samples for dark complexion (3 classes in ['Images/dark_complexion/'](https://github.com/vantrungfit/lawnet/blob/main/Images/dark_comlexion) folder).
+
+Below are wrist samples and corresponding ROIs of four wrists (indoor and outdoor) in our database: (a)RGB, (b) Bounding box, (c) Extracted ROI.
 
 <table>
     <thead>
@@ -84,15 +86,15 @@ Researchers can refer to 100 samples of NTUST-IW database (10 classes in ['Image
          <tr>
             <td rowspan=2>4</td>
             <td>Indoor</td>
-            <td><img src="https://github.com/vantrungfit/lawnet/blob/main/Images/ntust_iw_s4_ia.png" alt="s4_ia" width = auto height = auto></td>
-            <td><img src="https://github.com/vantrungfit/lawnet/blob/main/Images/ntust_iw_s4_ib.png" alt="s4_ib" width = auto height = auto></td>
-            <td><img src="https://github.com/vantrungfit/lawnet/blob/main/Images/ntust_iw_s4_ic.png" alt="s4_ic" width = auto height = auto></td>
+            <td><img src="https://github.com/vantrungfit/lawnet/blob/main/Images/ntust_iw_s5_ia.png" alt="s5_ia" width = auto height = auto></td>
+            <td><img src="https://github.com/vantrungfit/lawnet/blob/main/Images/ntust_iw_s5_ib.png" alt="s5_ib" width = auto height = auto></td>
+            <td><img src="https://github.com/vantrungfit/lawnet/blob/main/Images/ntust_iw_s5_ic.png" alt="s5_ic" width = auto height = auto></td>
         </tr>
         <tr>
             <td>Outdoor</td>
-            <td><img src="https://github.com/vantrungfit/lawnet/blob/main/Images/ntust_iw_s4_oa.png" alt="s4_oa" width = auto height = auto></td>
-            <td><img src="https://github.com/vantrungfit/lawnet/blob/main/Images/ntust_iw_s4_ob.png" alt="s4_ob" width = auto height = auto></td>
-            <td><img src="https://github.com/vantrungfit/lawnet/blob/main/Images/ntust_iw_s4_oc.png" alt="s4_oc" width = auto height = auto></td>
+            <td><img src="https://github.com/vantrungfit/lawnet/blob/main/Images/ntust_iw_s5_oa.png" alt="s5_oa" width = auto height = auto></td>
+            <td><img src="https://github.com/vantrungfit/lawnet/blob/main/Images/ntust_iw_s5_ob.png" alt="s5_ob" width = auto height = auto></td>
+            <td><img src="https://github.com/vantrungfit/lawnet/blob/main/Images/ntust_iw_s5_oc.png" alt="s5_oc" width = auto height = auto></td>
         </tr>
     </tbody>
 </table>
