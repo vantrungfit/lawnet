@@ -29,7 +29,7 @@ Finally, ten images were collected from each left and right wrist hand. The data
 
 ### Reference Samples
 
-Researchers can refer to 100 samples of NTUST-IW database (10 classes in ['Images/100_samples/'](https://github.com/vantrungfit/lawnet/blob/main/Images/100_samples) folder) and 30 samples for dark complexion (3 classes in ['Images/dark_complexion/'](https://github.com/vantrungfit/lawnet/blob/main/Images/dark_comlexion) folder).
+Researchers can refer to 100 samples of NTUST-IW database (10 classes in ['Images/100_samples/'](https://github.com/vantrungfit/lawnet/blob/main/Images/100_samples) folder) and 30 samples for dark complexion (3 classes in ['Images/dark_complexion/'](https://github.com/vantrungfit/lawnet/blob/main/Images/dark_complexion) folder).
 
 Below are wrist samples and corresponding ROIs of four wrists (indoor and outdoor) in our database: (a)RGB, (b) Bounding box, (c) Extracted ROI.
 
